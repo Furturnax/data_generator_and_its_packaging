@@ -3,7 +3,6 @@ from mimesis import Generic
 from mimesis.locales import Locale
 
 
-
 # class ImportData:
 #     """
 #     Печатает диалоговое онко и предлагает
@@ -32,42 +31,28 @@ from mimesis.locales import Locale
 #                 break
 #             elif user_choise == 3:
 #                 print('Пока в разработке')
-# value_num_rows: int = int(input('Введите желаемое количество строк: '))
 #                 break
 #             else:
 #                 print('Извини, но действие не выполнено, давай ещё раз.')
 
-def write_num_rows() -> int:
-    """Проверка введенного значения на корректность."""
-    value_num_rows: int = int(input('Введите желаемое количество строк: '))
-    if value_num_rows <= 2_000_000:
-        return value_num_rows
-    raise ValueError(
-        'Количество строк больше 2 000 000. Экспорт не выполнится.'
-        )
 
 
-NUM_ROWS: int = write_num_rows()
 NAME_FILE: str = 'DataFrame'
-NAME_COLUMNS: list[str] = ['Имя', 'Адресс', 'Почтовый индекс',
-                           'День Рождения', 'Паспорт',
-                           'Номер телефона', 'E-mail',
-                           'Работа', 'Банковская карта',
-                           'Операционная система телефона']
 
 
 class GeneratorData:
     """Генерация синтетических данныхс использованием библиотеки mimesis."""
 
-    NAME_COLUMNS: list[str] = ['Имя', 'Адресс', 'Почтовый индекс',
-                               'День Рождения', 'Паспорт',
-                               'Номер телефона', 'E-mail',
-                               'Работа', 'Банковская карта',
-                               'Операционная система телефона']
-
-    def __init__(self, NUM_ROWS) -> None:
-        self.num: int = NUM_ROWS
+    def __init__(self) -> None:
         self.generic: Generic = Generic(locale=Locale.RU)
+
+    def write_num_rows(self, input_number) -> int:
+        """Проверка введенного значения на корректность."""
+        if input_number <= 2_000_000:
+            return input_number
+        raise ValueError(
+            'Количество строк больше 2 000 000. Экспорт не выполнится.'
+            )
 
     def generate_data(self) -> list:
         """
@@ -75,7 +60,7 @@ class GeneratorData:
         таблицу сгенерированных данных.
         """
         uniq_data: list = []
-        for _ in range(NUM_ROWS):
+        for _ in range(user_input):
             full_name = self.generic.person.full_name()
             address = self.generic.address.address()
             post_code = self.generic.address.postal_code()
@@ -92,8 +77,13 @@ class GeneratorData:
 
     def generate_dataframe(self):
         """Генерирует таблицу данных."""
-        data: list = GeneratorData(NUM_ROWS).generate_data()
-        dataframe = pd.DataFrame(data, columns=NAME_COLUMNS)
+        data: list = self.generate_data()
+        name_columns: list[str] = ['Имя', 'Адресс', 'Почтовый индекс',
+                                   'День Рождения', 'Паспорт',
+                                   'Номер телефона', 'E-mail',
+                                   'Работа', 'Банковская карта',
+                                   'Операционная система телефона']
+        dataframe = pd.DataFrame(data, columns=name_columns)
         return dataframe
 
 
@@ -105,10 +95,10 @@ class ExportData(GeneratorData):
 
     def export_to_excel(self, filename=None):
         """Экспорт сгенерированной таблицы данных в файл Excel."""
-        if NUM_ROWS <= 1_000_000:
+        if user_input <= 1_000_000:
             self.dataframe.to_excel(filename, index=False, engine='openpyxl')
             print('Данные экспортированы в XLSX файл.')
-        elif 1_000_000 < NUM_ROWS <= 2_000_000:
+        elif 1_000_000 < user_input <= 2_000_000:
             self.dataframe_part_1 = self.dataframe.iloc[:1_000_000]
             self.dataframe_part_2 = self.dataframe.iloc[1_000_000:2_000_000]
             self.dataframe_part_1.to_excel(f'{NAME_FILE}_часть_1.xlsx',
@@ -135,10 +125,15 @@ class ZipData:
     pass
 
 
-data_exporter = ExportData(GeneratorData.generate_dataframe(NUM_ROWS))
+user_input: int = int(input('Введите желаемое количество строк: '))
+GeneratorData().input_number = GeneratorData().write_num_rows(user_input)
+
+data_exporter = ExportData(GeneratorData().generate_dataframe())
 data_exporter.export_to_csv(f'{NAME_FILE}.csv')
 data_exporter.export_to_txt(f'{NAME_FILE}.txt')
 data_exporter.export_to_excel(f'{NAME_FILE}.xlsx')
+
+
 
 
 # if __name__ == "__main__":
