@@ -3,6 +3,40 @@ from mimesis import Generic
 from mimesis.locales import Locale
 
 
+
+# class ImportData:
+#     """
+#     Печатает диалоговое онко и предлагает
+#     импортировать или создать файл с данными.
+#     """
+
+#     def chois():
+#         print('Привет. Я программа способная создать архив с '
+#               'твоими данными :3\n'
+#               'Давай выберем, что необходимо заархивировать\n'
+#               '1. Загрузить файл с компьютера.\n'
+#               '2. Записать данные самостоятельно.\n'
+#               '3. Сгенерировать данные.')
+
+#         while True:
+#             try:
+#                 user_choise = int(input('Напиши цифру нужного действия: '))
+#             except ValueError:
+#                 print('Нужна цифра.')
+
+#             if user_choise == 1:
+#                 print('Пока в разработке')
+#                 break
+#             elif user_choise == 2:
+#                 print('Пока в разработке')
+#                 break
+#             elif user_choise == 3:
+#                 print('Пока в разработке')
+# value_num_rows: int = int(input('Введите желаемое количество строк: '))
+#                 break
+#             else:
+#                 print('Извини, но действие не выполнено, давай ещё раз.')
+
 def write_num_rows() -> int:
     """Проверка введенного значения на корректность."""
     value_num_rows: int = int(input('Введите желаемое количество строк: '))
@@ -24,6 +58,12 @@ NAME_COLUMNS: list[str] = ['Имя', 'Адресс', 'Почтовый инде�
 
 class GeneratorData:
     """Генерация синтетических данныхс использованием библиотеки mimesis."""
+
+    NAME_COLUMNS: list[str] = ['Имя', 'Адресс', 'Почтовый индекс',
+                               'День Рождения', 'Паспорт',
+                               'Номер телефона', 'E-mail',
+                               'Работа', 'Банковская карта',
+                               'Операционная система телефона']
 
     def __init__(self, NUM_ROWS) -> None:
         self.num: int = NUM_ROWS
@@ -91,7 +131,37 @@ class ExportData(GeneratorData):
         print('Данные экспортированы в TXT файл.')
 
 
+class ZipData:
+    pass
+
+
 data_exporter = ExportData(GeneratorData.generate_dataframe(NUM_ROWS))
 data_exporter.export_to_csv(f'{NAME_FILE}.csv')
 data_exporter.export_to_txt(f'{NAME_FILE}.txt')
 data_exporter.export_to_excel(f'{NAME_FILE}.xlsx')
+
+
+# if __name__ == "__main__":
+    # ImportData.chois()
+    # data_exporter = ExportData(GeneratorData.generate_dataframe(50))
+    # print(GeneratorData.generate_dataframe(50))
+    # data_exporter.export_to_csv(f'{}.csv')
+    # data_exporter.export_to_txt(f'{}.txt')
+    # data_exporter.export_to_excel(f'{}.xlsx')
+
+
+
+    # def write_num_rows() -> int:
+    #     """Проверка введенного значения строк на корректность."""
+    #     while True:
+    #         try:
+    #             value_num_rows: int = int(input('Введите желаемое'
+    #                                             'количество строк: '))
+    #         except ValueError:
+    #             print('Нужно значение в виде цифры.')
+
+    #         if value_num_rows <= 2_000_000:
+    #             return value_num_rows
+    #         raise ValueError(
+    #             'Количество строк больше 2 000 000. Экспорт не выполнится.'
+    #             )
